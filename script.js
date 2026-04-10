@@ -25,7 +25,7 @@ async function fetchChart() {
 
   const timeSeries = data['Time Series (Daily)'];
   const labels = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = labels.map(date => parseFloat(timeSeries[date]['4. close']));
+  const prices = labels.map(date => parseFloat(timeSeries[date]['2. high']));
 
   if (chart) chart.destroy();
 
@@ -35,7 +35,7 @@ async function fetchChart() {
     data: {
       labels,
       datasets: [{
-        label: `${symbol} Closing Price`,
+        label: `${symbol} Daily High`,
         data: prices,
         borderColor: '#333',
         backgroundColor: 'rgba(51,51,51,0.1)',
