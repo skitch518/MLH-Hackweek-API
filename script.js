@@ -65,7 +65,7 @@ function renderChart() {
 
   if (currentChartType === 'candlestick') {
     const candleData = labels.map((label, i) => ({
-      x: label,
+      x: i,
       o: open[i],
       h: high[i],
       l: low[i],
@@ -83,7 +83,12 @@ function renderChart() {
       options: {
         responsive: true,
         scales: {
-          x: { type: 'category' },
+          x: { 
+            type: 'linear',
+            ticks: {
+              callback: (val) => labels[val] || ''
+            }
+          },
           y: { ticks: { callback: v => '$' + v.toFixed(2) } }
         }
       }
