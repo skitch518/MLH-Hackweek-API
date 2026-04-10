@@ -61,11 +61,9 @@ function renderChart() {
   const low    = lastData.low.slice(-currentDays);
   const close  = lastData.close.slice(-currentDays);
 
-  const ctx = document.getElementById('myChart').getContext('2d');
-
-  if (currentChartType === 'candlestick') {
+  const ctx = document.getElementById('myChart').getContext('2d');if (currentChartType === 'candlestick') {
     const candleData = labels.map((label, i) => ({
-      x: i,
+      x: label,
       o: open[i],
       h: high[i],
       l: low[i],
@@ -83,17 +81,11 @@ function renderChart() {
       options: {
         responsive: true,
         scales: {
-          x: { 
-            type: 'linear',
-            ticks: {
-              callback: (val) => labels[val] || ''
-            }
-          },
+          x: { type: 'category' },
           y: { ticks: { callback: v => '$' + v.toFixed(2) } }
         }
       }
     });
-
   } else {
     chart = new Chart(ctx, {
       type: 'line',
