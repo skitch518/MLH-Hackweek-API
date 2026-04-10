@@ -3,7 +3,6 @@ let chart = null;
 async function fetchChart() {
   const symbol = document.getElementById('ticker').value.trim().toUpperCase();
   const errorEl = document.getElementById('error');
-  const loadingEl = document.getElementById('loading');
   errorEl.textContent = '';
 
   if (!symbol) {
@@ -11,21 +10,9 @@ async function fetchChart() {
     return;
   }
 
-  loadingEl.classList.remove('hidden');
-
-  const response = await fetch(`/.netlify/functions/chart?symbol=${symbol}`);
-  const data = await response.json();
-
-  loadingEl.classList.add('hidden');
-
-  if (data['Error Message'] || !data['Time Series (Daily)']) {
-    errorEl.textContent = 'Could not find that ticker. Try another.';
-    return;
-  }
-
-  const timeSeries = data['Time Series (Daily)'];
-  const labels = Object.keys(timeSeries).slice(0, 30).reverse();
-  const prices = labels.map(date => parseFloat(timeSeries[date]['2. high']));
+  // FAKE DATA - swap this out when done styling
+  const labels = ['Apr 1','Apr 2','Apr 3','Apr 4','Apr 5','Apr 6','Apr 7','Apr 8','Apr 9','Apr 10'];
+  const prices = [190.50, 192.30, 191.00, 194.75, 196.20, 193.40, 195.80, 197.10, 196.50, 198.75];
 
   if (chart) chart.destroy();
 
@@ -35,7 +22,7 @@ async function fetchChart() {
     data: {
       labels,
       datasets: [{
-        label: `${symbol} Daily High`,
+        label: `${symbol} Closing Price`,
         data: prices,
         borderColor: '#333',
         backgroundColor: 'rgba(51,51,51,0.1)',
@@ -51,7 +38,3 @@ async function fetchChart() {
     }
   });
 }
-
-document.getElementById('ticker').addEventListener('keydown', e => {
-  if (e.key === 'Enter') fetchChart();
-});
