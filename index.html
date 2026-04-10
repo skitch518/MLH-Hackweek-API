@@ -10,20 +10,32 @@
 <body>
   <div class="container">
     <h1>Stock Chart</h1>
+    
     <div class="search-bar">
-      <input type="text" id="ticker" placeholder="Enter ticker (e.g. NVDA)" />
+      <input type="text" id="ticker" placeholder="Enter ticker (e.g. AAPL)" />
       <button onclick="fetchChart()">Search</button>
     </div>
-  <div class="timeframe-buttons">
-    <button onclick="setTimeframe(5)">1W</button>
-    <button onclick="setTimeframe(10)">2W</button>
-    <button class="active" onclick="setTimeframe(30)">1M</button>
-    <button onclick="setTimeframe(90)">3M</button>
-  </div>
+    
     <div id="error" class="error"></div>
     <div id="loading" class="loading hidden">Loading...</div>
+
+    <div class="chart-toggle">
+      <button class="active" onclick="setChartType('line')">Line</button>
+      <button onclick="setChartType('candlestick')">Candlestick</button>
+    </div>
+
     <canvas id="myChart"></canvas>
+
+    <div class="timeframe-buttons">
+      <button onclick="setTimeframe(5)">1W</button>
+      <button onclick="setTimeframe(10)">2W</button>
+      <button class="active" onclick="setTimeframe(30)">1M</button>
+      <button onclick="setTimeframe(90)">3M</button>
+    </div>
+  
   </div>
+  
   <script src="script.js"></script>
 </body>
+
 </html>
