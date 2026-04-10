@@ -14,6 +14,13 @@
       <input type="text" id="ticker" placeholder="Enter ticker (e.g. NVDA)" />
       <button onclick="fetchChart()">Search</button>
     </div>
+    <div class="metric-buttons">
+      <button onclick="setMetric('open')">Open</button>
+      <button onclick="setMetric('high')">High</button>
+      <button onclick="setMetric('low')">Low</button>
+      <button onclick="setMetric('close')">Close</button>
+      <button onclick="setMetric('all')">All</button>
+</div>
     <div id="error" class="error"></div>
     <div id="loading" class="loading hidden">Loading...</div>
     <canvas id="myChart"></canvas>
