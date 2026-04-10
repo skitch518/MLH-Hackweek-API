@@ -1,13 +1,13 @@
 let chart = null;
-let currentMetric = 'close';
 let lastLabels = [];
-let lastData = {};
+let lastPrices = [];
+let currentDays = 30;
 
-function setMetric(metric) {
-  currentMetric = metric;
-  document.querySelectorAll('.metric-buttons button').forEach(b => b.classList.remove('active'));
+function setTimeframe(days) {
+  currentDays = days;
+  document.querySelectorAll('.timeframe-buttons button').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
-  renderChart(lastLabels, lastData);
+  renderChart(lastLabels.slice(-days), lastPrices.slice(-days));
 }
 
 async function fetchChart() {
@@ -24,44 +24,36 @@ async function fetchChart() {
   loadingEl.classList.remove('hidden');
 
   // FAKE DATA - swap out when done styling
-  const labels = ['Apr 1','Apr 2','Apr 3','Apr 4','Apr 5','Apr 6','Apr 7','Apr 8','Apr 9','Apr 10'];
+  const labels = ['Mar 12','Mar 13','Mar 14','Mar 17','Mar 18','Mar 19','Mar 20','Mar 21','Mar 24','Mar 25','Mar 26','Mar 27','Mar 28','Mar 31','Apr 1','Apr 2','Apr 3','Apr 4','Apr 7','Apr 8','Apr 9','Apr 10'];
+  const prices = [182,184,183,186,188,187,190,192,191,194,196,195,197,199,198,200,199,201,203,202,204,206];
 
   lastLabels = labels;
-  lastData = {
-    open:  [188, 190, 189, 192, 194, 191, 193, 195, 194, 196],
-    high:  [191, 193, 192, 195, 197, 194, 196, 198, 197, 199],
-    low:   [187, 189, 188, 191, 193, 190, 192, 194, 193, 195],
-    close: [190.50, 192.30, 191.00, 194.75, 196.20, 193.40, 195.80, 197.10, 196.50, 198.75],
-  };
+  lastPrices = prices;
 
   loadingEl.classList.add('hidden');
-  renderChart(lastLabels, lastData);
+  renderChart(lastLabels.slice(-currentDays), lastPrices.slice(-currentDays));
 }
 
-function renderChart(labels, data) {
-  if (!labels.length || !data.close) return;
+function renderChart(labels, prices) {
+  if (!labels.length) return;
   if (chart) chart.destroy();
 
   const ctx = document.getElementById('myChart').getContext('2d');
 
-  const datasets = currentMetric === 'all' ? [
-    { label: 'Open',  data: data.open,  borderColor: '#4e79a7', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3 },
-    { label: 'High',  data: data.high,  borderColor: '#59a14f', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3 },
-    { label: 'Low',   data: data.low,   borderColor: '#e15759', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3 },
-    { label: 'Close', data: data.close, borderColor: '#333',    backgroundColor: 'transparent', tension: 0.3, pointRadius: 3 },
-  ] : [{
-    label: currentMetric.charAt(0).toUpperCase() + currentMetric.slice(1),
-    data: data[currentMetric],
-    borderColor: '#333',
-    backgroundColor: 'rgba(51,51,51,0.1)',
-    tension: 0.3,
-    fill: true,
-    pointRadius: 3,
-  }];
-
   chart = new Chart(ctx, {
     type: 'line',
-    data: { labels, datasets },
+    data: {
+      labels,
+      datasets: [{
+        label: 'Close Price',
+        data: prices,
+        borderColor: '#333',
+        backgroundColor: 'rgba(51,51,51,0.1)',
+        tension: 0.3,
+        fill: true,
+        pointRadius: 3,
+      }]
+    },
     options: {
       responsive: true,
       plugins: { legend: { display: true } },
