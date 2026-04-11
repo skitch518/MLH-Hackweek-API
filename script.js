@@ -9,17 +9,17 @@ let lastData = {
   close: [],
 };
 
-function setTimeframe(days) {
+function setTimeframe(days, btn) {
   currentDays = days;
   document.querySelectorAll('.timeframe-buttons button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   renderChart();
 }
 
-function setChartType(type) {
+function setChartType(type, btn) {
   currentChartType = type;
   document.querySelectorAll('.chart-toggle button').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  btn.classList.add('active');
   renderChart();
 }
 
@@ -48,7 +48,7 @@ async function fetchChart() {
 
     const timeSeries = data['Time Series (Daily)'];
     const allLabels = Object.keys(timeSeries).reverse();
-    
+
     lastLabels = allLabels;
     lastData = {
       open:  allLabels.map(d => parseFloat(timeSeries[d]['1. open'])),
@@ -77,39 +77,41 @@ function renderChart() {
   const low    = lastData.low.slice(-currentDays);
   const close  = lastData.close.slice(-currentDays);
 
-  const ctx = document.getElementById('myChart').getContext('2d');if (currentChartType === 'candlestick') {
-  const candleData = labels.map((label, i) => ({
-  x: i,
-  o: open[i],
-  h: high[i],
-  l: low[i],
-  c: close[i],
-  }));
+  const ctx = document.getElementById('myChart').getContext('2d');
 
-  chart = new Chart(ctx, {
-    type: 'candlestick',
-    data: {
-      datasets: [{
-        label: 'Price',
-        data: candleData,
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        x: { 
-          type: 'linear',
-          min: 0,
-          max: labels.length - 1,
-        },
-        y: { 
-          min: Math.min(...low) - 5,
-          max: Math.max(...high) + 5,
-          ticks: { callback: v => '$' + v.toFixed(2) } 
+  if (currentChartType === 'candlestick') {
+    const candleData = labels.map((label, i) => ({
+      x: label,
+      o: open[i],
+      h: high[i],
+      l: low[i],
+      c: close[i],
+    }));
+
+    chart = new Chart(ctx, {
+      type: 'candlestick',
+      data: {
+        datasets: [{
+          label: 'Price',
+          data: candleData,
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'time',
+            time: { unit: 'day' },
+          },
+          y: {
+            min: Math.min(...low) - 5,
+            max: Math.max(...high) + 5,
+            ticks: { callback: v => '$' + v.toFixed(2) }
+          }
         }
       }
-    }
-  });
+    });
+
   } else {
     chart = new Chart(ctx, {
       type: 'line',
