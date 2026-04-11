@@ -37,7 +37,7 @@ async function fetchChart() {
   loadingEl.classList.remove('hidden');
 
   try {
-    const response = await fetch(`/functions/chart?symbol=${symbol}`);
+    const response = await fetch(`https://shrill-thunder-4062.jasonrschriner.workers.dev?symbol=${symbol}`);
     console.log('Status:', response.status);
     console.log('OK:', response.ok);
     
