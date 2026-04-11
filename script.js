@@ -38,7 +38,13 @@ async function fetchChart() {
 
   try {
     const response = await fetch(`/functions/chart?symbol=${symbol}`);
-    const data = await response.json();
+    console.log('Status:', response.status);
+    console.log('OK:', response.ok);
+    
+    const text = await response.text();
+    console.log('Raw response:', text);
+    
+    const data = JSON.parse(text);
 
     if (data['Error Message'] || !data['Time Series (Daily)']) {
       errorEl.textContent = 'Could not find that ticker. Try another.';
