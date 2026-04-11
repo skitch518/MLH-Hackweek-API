@@ -36,16 +36,32 @@ async function fetchChart() {
 
   loadingEl.classList.remove('hidden');
 
-  // FAKE DATA - swap out when done styling
-  const labels = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
-  
-  lastLabels = labels;
-  lastData = {
-    open:  [181,183,182,185,187,186,189,191,190,193,195,194,196,198,197,199,198,200,202,201,203,205],
-    high:  [184,186,185,188,190,189,192,194,193,196,198,197,199,201,200,202,201,203,205,204,206,208],
-    low:   [180,182,181,184,186,185,188,190,189,192,194,193,195,197,196,198,197,199,201,200,202,204],
-    close: [182,184,183,186,188,187,190,192,191,194,196,195,197,199,198,200,199,201,203,202,204,206],
-  };
+  try {
+    const response = await fetch(`/functions/chart?symbol=${symbol}`);
+    const data = await response.json();
+
+    if (data['Error Message'] || !data['Time Series (Daily)']) {
+      errorEl.textContent = 'Could not find that ticker. Try another.';
+      loadingEl.classList.add('hidden');
+      return;
+    }
+
+    const timeSeries = data['Time Series (Daily)'];
+    const allLabels = Object.keys(timeSeries).reverse();
+    
+    lastLabels = allLabels;
+    lastData = {
+      open:  allLabels.map(d => parseFloat(timeSeries[d]['1. open'])),
+      high:  allLabels.map(d => parseFloat(timeSeries[d]['2. high'])),
+      low:   allLabels.map(d => parseFloat(timeSeries[d]['3. low'])),
+      close: allLabels.map(d => parseFloat(timeSeries[d]['4. close'])),
+    };
+
+  } catch(e) {
+    errorEl.textContent = 'Something went wrong. Please try again.';
+    loadingEl.classList.add('hidden');
+    return;
+  }
 
   loadingEl.classList.add('hidden');
   renderChart();
