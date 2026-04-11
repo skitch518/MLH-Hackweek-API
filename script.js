@@ -63,29 +63,29 @@ function renderChart() {
 
   const ctx = document.getElementById('myChart').getContext('2d');if (currentChartType === 'candlestick') {
     const candleData = labels.map((label, i) => ({
-      x: label,
-      o: open[i],
-      h: high[i],
-      l: low[i],
-      c: close[i],
-    }));
+  x: String(label),
+  o: open[i],
+  h: high[i],
+  l: low[i],
+  c: close[i],
+}));
 
-    chart = new Chart(ctx, {
-      type: 'candlestick',
-      data: {
-        datasets: [{
-          label: 'Price',
-          data: candleData,
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          x: { type: 'linear' },
-          y: { ticks: { callback: v => '$' + v.toFixed(2) } }
-        }
-      }
-    });
+chart = new Chart(ctx, {
+  type: 'candlestick',
+  data: {
+    datasets: [{
+      label: 'Price',
+      data: candleData,
+    }]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { type: 'category' },
+      y: { ticks: { callback: v => '$' + v.toFixed(2) } }
+    }
+  }
+});
   } else {
     chart = new Chart(ctx, {
       type: 'line',
