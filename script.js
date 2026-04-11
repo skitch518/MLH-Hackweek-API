@@ -37,7 +37,7 @@ async function fetchChart() {
   loadingEl.classList.remove('hidden');
 
   // FAKE DATA - swap out when done styling
-  const labels = ['Mar 12','Mar 13','Mar 14','Mar 17','Mar 18','Mar 19','Mar 20','Mar 21','Mar 24','Mar 25','Mar 26','Mar 27','Mar 28','Mar 31','Apr 1','Apr 2','Apr 3','Apr 4','Apr 7','Apr 8','Apr 9','Apr 10'];
+  const labels = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22];
   
   lastLabels = labels;
   lastData = {
@@ -81,7 +81,7 @@ function renderChart() {
       options: {
         responsive: true,
         scales: {
-          x: { type: 'category' },
+          x: { type: 'linear' },
           y: { ticks: { callback: v => '$' + v.toFixed(2) } }
         }
       }
