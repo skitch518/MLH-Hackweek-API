@@ -38,11 +38,10 @@ async function fetchChart() {
 
   try {
     const response = await fetch(`https://shrill-thunder-4062.jasonrschriner.workers.dev?symbol=${symbol}`);
-    console.log('Status:', response.status);
-    console.log('OK:', response.ok);
+   
     
     const text = await response.text();
-    console.log('Raw response:', text);
+    
     
     const data = JSON.parse(text);
 
@@ -51,7 +50,13 @@ async function fetchChart() {
       loadingEl.classList.add('hidden');
       return;
     }
-
+    
+    if (data['Note']) {
+      errorEl.textContent = 'Rate limit reached. Please try again tomorrow.';
+      loadingEl.classList.add('hidden');
+      return;
+    }
+    
     const timeSeries = data['Time Series (Daily)'];
     const allLabels = Object.keys(timeSeries).reverse();
 
