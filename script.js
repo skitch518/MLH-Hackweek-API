@@ -37,36 +37,33 @@ async function fetchChart() {
   loadingEl.classList.remove('hidden');
 
   try {
-    const response = await fetch(`https://shrill-thunder-4062.jasonrschriner.workers.dev?symbol=${symbol}`);
-   
-    
-    const text = await response.text();
-    
-    
-    const data = JSON.parse(text);
+    // Fetch candle data and sentiment in parallel
+    const [candleRes, sentimentRes] = await Promise.all([
+      fetch(`https://shrill-thunder-4062.jasonrschriner.workers.dev?symbol=${symbol}&type=candle`),
+      fetch(`https://shrill-thunder-4062.jasonrschriner.workers.dev?symbol=${symbol}&type=sentiment`)
+    ]);
 
-    if (data['Error Message'] || !data['Time Series (Daily)']) {
+    const candle = await candleRes.json();
+    const sentiment = await sentimentRes.json();
+
+    // Finnhub returns 'no_data' if symbol is invalid
+    if (candle.s === 'no_data' || !candle.t) {
       errorEl.textContent = 'Could not find that ticker. Try another.';
       loadingEl.classList.add('hidden');
       return;
     }
-    
-    if (data['Note']) {
-      errorEl.textContent = 'Rate limit reached. Please try again tomorrow.';
-      loadingEl.classList.add('hidden');
-      return;
-    }
-    
-    const timeSeries = data['Time Series (Daily)'];
-    const allLabels = Object.keys(timeSeries).reverse();
 
-    lastLabels = allLabels;
+    // Map Finnhub candle response
+    lastLabels = candle.t.map(ts => new Date(ts * 1000).toISOString().split('T')[0]);
     lastData = {
-      open:  allLabels.map(d => parseFloat(timeSeries[d]['1. open'])),
-      high:  allLabels.map(d => parseFloat(timeSeries[d]['2. high'])),
-      low:   allLabels.map(d => parseFloat(timeSeries[d]['3. low'])),
-      close: allLabels.map(d => parseFloat(timeSeries[d]['4. close'])),
+      open:  candle.o,
+      high:  candle.h,
+      low:   candle.l,
+      close: candle.c,
     };
+
+    // Render sentiment scorecard
+    renderSentiment(sentiment);
 
   } catch(e) {
     errorEl.textContent = 'Something went wrong. Please try again.';
@@ -76,6 +73,45 @@ async function fetchChart() {
 
   loadingEl.classList.add('hidden');
   renderChart();
+}
+
+function renderSentiment(data) {
+  const container = document.getElementById('sentiment');
+  if (!container) return;
+
+  if (!data || !data.sentiment) {
+    container.innerHTML = '<p>Sentiment data unavailable.</p>';
+    return;
+  }
+
+  const bullish = (data.sentiment.bullishPercent * 100).toFixed(1);
+  const bearish = (data.sentiment.bearishPercent * 100).toFixed(1);
+  const score = data.companyNewsScore ? data.companyNewsScore.toFixed(2) : 'N/A';
+  const buzz = data.buzz ? data.buzz.buzz.toFixed(2) : 'N/A';
+
+  container.innerHTML = `
+    <div class="sentiment-card">
+      <h3>Market Sentiment</h3>
+      <div class="sentiment-grid">
+        <div class="sentiment-item bullish">
+          <span class="label">Bullish</span>
+          <span class="value">${bullish}%</span>
+        </div>
+        <div class="sentiment-item bearish">
+          <span class="label">Bearish</span>
+          <span class="value">${bearish}%</span>
+        </div>
+        <div class="sentiment-item">
+          <span class="label">News Score</span>
+          <span class="value">${score}</span>
+        </div>
+        <div class="sentiment-item">
+          <span class="label">Buzz</span>
+          <span class="value">${buzz}</span>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderChart() {
@@ -110,10 +146,7 @@ function renderChart() {
       options: {
         responsive: true,
         scales: {
-          x: {
-            type: 'time',
-            time: { unit: 'day' },
-          },
+          x: { type: 'time', time: { unit: 'day' } },
           y: {
             min: Math.min(...low) - 5,
             max: Math.max(...high) + 5,
