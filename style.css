@@ -20,49 +20,42 @@ button:hover { background: #555; }
 
 .hidden { display: none; }
 
-canvas { width: 100% !important; max-width: 600px; display: block; margin: 0 auto; }
-
-.timeframe-buttons { display: flex; gap: 8px; margin-bottom: 1.5rem; justify-content: center; }
-
-.timeframe-buttons button { background: #f5f5f5; color: #333; font-size: 14px; padding: 6px 14px; }
-
-.timeframe-buttons button.active { background: #333; color: white; }
-
-.chart-toggle { display: flex; gap: 8px; margin-bottom: 1rem; justify-content: center; }
-
-.chart-toggle button { background: #f5f5f5; color: #333; font-size: 14px; padding: 6px 14px; }
-
-.chart-toggle button.active { background: #333; color: white; }
-
-.sentiment-card {
+.quote-card {
   margin-top: 2rem;
-  padding: 1rem;
+  padding: 1.5rem;
   border: 1px solid #ddd;
   border-radius: 8px;
+  text-align: center;
 }
 
-.sentiment-grid {
+.current-price {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.change {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.positive { color: green; }
+.negative { color: red; }
+
+.quote-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 1rem;
 }
 
-.sentiment-item {
-  text-align: center;
-}
-
-.sentiment-item .label {
+.quote-item .label {
   display: block;
   font-size: 0.85rem;
   color: #666;
 }
 
-.sentiment-item .value {
+.quote-item .value {
   display: block;
-  font-size: 1.5rem;
   font-weight: bold;
 }
-
-.bullish .value { color:green }
-.bearish .value { color: red; }
