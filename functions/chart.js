@@ -1,6 +1,6 @@
 export async function onRequest(context) {
   const symbol = new URL(context.request.url).searchParams.get('symbol');
-  const apiKey = context.env.ALPHAVANTAGE_API_KEY;
+  const apiKey = context.env.FINNHUB_API_KEY;
 
   if (!symbol) {
     return new Response(JSON.stringify({ error: 'No symbol provided' }), { status: 400 });
